@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Standings</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="app-container">
+  <div class="top-gradient"></div>
+  <div class="content-shell">
+    <div class="hero-card">
+      <h1>Tournament Standings</h1>
+      <p class="hero-subtitle">Live leaderboard with wins, draws, losses, and points</p>
+    </div>
+
+    <div class="nav">
+      <a href="index.html">Home</a>
+      <a href="table.html">Standings</a>
+    </div>
+
+    <div class="card">
+      <input id="teamSearch" placeholder="Search team..." oninput="applyTeamSearch()" class="search-input">
+      <table id="table"></table>
+    </div>
+  </div>
+</div>
+<script src="data.js"></script>
+</body>
+</html>

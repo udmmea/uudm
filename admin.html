@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="header">
+<h1>Tournament Admin Panel</h1>
+<p class="subtitle">Add results, manage matches, and update tournament state</p>
+</div>
+
+<div class="nav">
+<a href="index.html">Home</a>
+<a href="table.html">Standings</a>
+<a href="admin.html">Admin</a>
+</div>
+
+<div class="card">
+
+<h2>Add Match</h2>
+
+<select id="home"><option value="">Select home team</option></select><br><br>
+<select id="away"><option value="">Select away team</option></select><br><br>
+<input id="hg" type="number" placeholder="Home Goals" min="0"><br><br>
+<input id="ag" type="number" placeholder="Away Goals" min="0"><br><br>
+
+<div id="error" style="color:#ff6b6b;margin-bottom:10px;"></div>
+
+<button id="addBtn" onclick="addMatch()">Add</button>
+<button style="margin-left:8px" onclick="exportState()">Export State</button>
+<button style="margin-left:8px" onclick="document.getElementById('importFile').click()">Import State</button>
+<input id="importFile" type="file" accept="application/json" style="display:none" onchange="handleImport(this)">
+
+<hr style="margin:12px 0;border-color:#2b2b2b">
+<h3>Match Details (optional)</h3>
+<label>Home scorers (comma-separated):</label><br>
+<input id="homeScorers" placeholder="Player1, Player2"><br><br>
+<label>Away scorers (comma-separated):</label><br>
+<input id="awayScorers" placeholder="PlayerA, PlayerB"><br><br>
+<label>Home assists (comma-separated, align with scorers):</label><br>
+<input id="homeAssists" placeholder="Assist1, Assist2"><br><br>
+<label>Away assists (comma-separated):</label><br>
+<input id="awayAssists" placeholder="AssistA, AssistB"><br><br>
+
+</div>
+
+<div class="card">
+<h2>Matches</h2>
+<div id="list"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>
