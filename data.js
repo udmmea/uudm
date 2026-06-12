@@ -8,7 +8,17 @@ let teams = [
   {name: "Prism Reapers", logo: "https://via.placeholder.com/40?text=PR"},
   {name: "Ember Knights", logo: "https://via.placeholder.com/40?text=EK"},
   {name: "Valkyrie Crew", logo: "https://via.placeholder.com/40?text=VC"},
-  {name: "Celestial Rift", logo: "https://via.placeholder.com/40?text=CR"}
+  {name: "Celestial Rift", logo: "https://via.placeholder.com/40?text=CR"},
+  {name: "Iron Sentinels", logo: "https://via.placeholder.com/40?text=IS"},
+  {name: "Solaris Unit", logo: "https://via.placeholder.com/40?text=SU"},
+  {name: "Glacier Wolves", logo: "https://via.placeholder.com/40?text=GW"},
+  {name: "Nebula Legion", logo: "https://via.placeholder.com/40?text=NL"},
+  {name: "Aether Falcons", logo: "https://via.placeholder.com/40?text=AF"},
+  {name: "Rogue Titans", logo: "https://via.placeholder.com/40?text=RT"},
+  {name: "Vortex Rangers", logo: "https://via.placeholder.com/40?text=VR"},
+  {name: "Phantom Core", logo: "https://via.placeholder.com/40?text=PC"},
+  {name: "Obsidian Guard", logo: "https://via.placeholder.com/40?text=OG"},
+  {name: "Zenith Echo", logo: "https://via.placeholder.com/40?text=ZE"}
 ];
 
 function findTeamObj(name){
@@ -17,51 +27,18 @@ function findTeamObj(name){
   return teams.find(t => t.name.toLowerCase().trim() === lc);
 }
 
-let matches = [
-  {home: "Neon Vanguard", away: "Quantum Pulse", hg: 2, ag: 1, homeScorers:["Raze"], awayScorers:["Volt"], homeAssists:["Echo"], awayAssists:["Flash"]},
-  {home: "Apex Mirage", away: "Shadow Circuit", hg: 1, ag: 1, homeScorers:["Nova"], awayScorers:["Pulse"], homeAssists:["Zen"], awayAssists:["Rune"]},
-  {home: "Titan Nova", away: "Storm Forge", hg: 0, ag: 3, homeScorers:[], awayScorers:["Blaze","Bolt","Aria"], homeAssists:[], awayAssists:["Frost","Gale","Ion"]},
-  {home: "Prism Reapers", away: "Ember Knights", hg: null, ag: null, homeScorers:[], awayScorers:[], homeAssists:[], awayAssists:[]},
-  {home: "Valkyrie Crew", away: "Celestial Rift", hg: null, ag: null, homeScorers:[], awayScorers:[], homeAssists:[], awayAssists:[]}
-];
+let matches = [];
 
-let weeks = [
-  [
-    {home: "Neon Vanguard", away: "Quantum Pulse", hg: 2, ag: 1},
-    {home: "Apex Mirage", away: "Shadow Circuit", hg: 1, ag: 1},
-    {home: "Titan Nova", away: "Storm Forge", hg: 0, ag: 3},
-    {home: "Prism Reapers", away: "Ember Knights", hg: null, ag: null},
-    {home: "Valkyrie Crew", away: "Celestial Rift", hg: null, ag: null}
-  ],
-  [
-    {home: "Quantum Pulse", away: "Titan Nova", hg: null, ag: null},
-    {home: "Neon Vanguard", away: "Apex Mirage", hg: null, ag: null},
-    {home: "Storm Forge", away: "Prism Reapers", hg: null, ag: null},
-    {home: "Shadow Circuit", away: "Valkyrie Crew", hg: null, ag: null},
-    {home: "Ember Knights", away: "Celestial Rift", hg: null, ag: null}
-  ],
-  [
-    {home: "Neon Vanguard", away: "Titan Nova", hg: null, ag: null},
-    {home: "Quantum Pulse", away: "Shadow Circuit", hg: null, ag: null},
-    {home: "Apex Mirage", away: "Valkyrie Crew", hg: null, ag: null},
-    {home: "Prism Reapers", away: "Celestial Rift", hg: null, ag: null},
-    {home: "Ember Knights", away: "Storm Forge", hg: null, ag: null}
-  ],
-  [
-    {home: "Neon Vanguard", away: "Prism Reapers", hg: null, ag: null},
-    {home: "Quantum Pulse", away: "Ember Knights", hg: null, ag: null},
-    {home: "Apex Mirage", away: "Titan Nova", hg: null, ag: null},
-    {home: "Shadow Circuit", away: "Storm Forge", hg: null, ag: null},
-    {home: "Valkyrie Crew", away: "Celestial Rift", hg: null, ag: null}
-  ]
-];
+let weeks = []; // generated dynamically from `teams`
 
 let currentWeek = 0;
 
-const playerSlots = Array.from({length: 20}, (_, index) => ({
-  name: `Player Slot ${index + 1}`,
-  telegram: `https://t.me/username${index + 1}`
-}));
+function getPlayerSlots(){
+  return teams.map((team, index) => ({
+    name: team.name,
+    telegram: `https://t.me/username${index + 1}`
+  }));
+}
 
 
   // Persistence keys
@@ -118,6 +95,27 @@ const playerSlots = Array.from({length: 20}, (_, index) => ({
   }catch(e){
     delChannel = null;
   }
+// --- Admin authentication (client-side only) ---
+function isAdmin(){
+  try{ return localStorage.getItem('del_admin_auth') === '1'; }catch(e){return false;}
+}
+
+function setAdminPasswordInteractive(){
+  const pw = prompt('Set admin password (will be stored locally in this browser):');
+  if(!pw) return false;
+  try{ localStorage.setItem('del_admin_pw', pw); alert('Admin password set.'); return true; }catch(e){alert('Failed to set password'); return false;}
+}
+
+function loginAdminInteractive(){
+  const pw = prompt('Admin password:');
+  const stored = localStorage.getItem('del_admin_pw');
+  if(!stored){ alert('No admin password configured. Use "Set admin password" first.'); return false; }
+  if(pw === stored){ localStorage.setItem('del_admin_auth','1'); try{ const bc = new BroadcastChannel('del_channel'); bc.postMessage({type:'state_updated'}); bc.close(); }catch(e){} alert('Logged in as admin'); return true; }
+  alert('Incorrect password'); return false;
+}
+
+function logoutAdmin(){ localStorage.removeItem('del_admin_auth'); try{ const bc = new BroadcastChannel('del_channel'); bc.postMessage({type:'state_updated'}); bc.close(); }catch(e){} }
+
 function updateWeekLabel(){
   const label = document.getElementById('weekLabel');
   if(!label) return;
@@ -216,7 +214,9 @@ function computeTableData() {
     return tableData.find(t => t.name.toLowerCase().trim() === lc);
   }
 
-  matches.forEach(m => {
+    // Only include matches that are not hidden, unless viewer is admin
+    const matchesToCount = (typeof isAdmin === 'function' && isAdmin()) ? matches : matches.filter(m => !m.hidden);
+    matchesToCount.forEach(m => {
     let home = getTeam(m.home);
     let away = getTeam(m.away);
     if (!home || !away) return;
@@ -345,7 +345,8 @@ function renderTop5(){
 function renderPlayerSlots(){
   const slotContainer = document.getElementById('playerSlots');
   if(!slotContainer) return;
-  slotContainer.innerHTML = playerSlots.map(slot =>
+  const slots = getPlayerSlots();
+  slotContainer.innerHTML = slots.map(slot =>
     `<a class="player-item" href="${slot.telegram}" target="_blank" rel="noreferrer noopener">
       <div>
         <strong>${slot.name}</strong>
